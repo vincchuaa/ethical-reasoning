@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+
+# Environment
+.env
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs (including vLLM auto-start logs)
+logs/
+*.log
+wandb/
+
+# Response data (large files - download separately)
+attack/response/
+defense/responses/
+
+# Training artifacts
+defense/models/
+defense/outputs/
+defense/ablation_heads/
+defense/ablation_lora/
+defense/wandb/
+demo_data/
+
+# Training datasets (not distributed)
+defense/datasets/train_data/
+
+# Misc
+unsloth_compiled_cache/
+rsync.sh

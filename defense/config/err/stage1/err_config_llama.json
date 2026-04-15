@@ -1,0 +1,21 @@
+{
+  "stage": 1,
+  "base_model_id": "meta-llama/Llama-3.1-8B-Instruct",
+  "benign_data_path": "./datasets/train_data/benign_train.jsonl",
+  "harmful_data_path": "./datasets/train_data/harmful_train.jsonl",
+  "output_dir": "./outputs/stage1",
+  "deepspeed_config": "./config/ds/ds_config.json",
+
+  "batch_size": 8,
+  "grad_accum_steps": 4,
+  "num_epochs": 3,
+  "head_lr": 2e-4,
+  "warmup_ratio": 0.1,
+  "weight_decay": 0.01,
+
+  "harm_detection_layer": 16,
+  "alpha": 1.0,
+  "lambda_reg": 0.01,
+  "head_dropout": 0.1,
+  "gate_floor": 0.05
+}

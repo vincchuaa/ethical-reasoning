@@ -1,0 +1,25 @@
+{
+  "stage": 2,
+  "base_model_id": "meta-llama/Llama-3.1-8B-Instruct",
+  "head_checkpoint": "./outputs/stage1/harm_head.pt",
+  "benign_data_path": "./datasets/train_data/benign_train.jsonl",
+  "harmful_data_path": "./datasets/train_data/harmful_train.jsonl",
+  "output_dir": "./outputs/stage2",
+  "deepspeed_config": "./config/ds/ds_config.json",
+
+  "batch_size": 1,
+  "grad_accum_steps": 16,
+  "num_epochs": 1,
+  "learning_rate": 0.0002,
+
+  "harm_detection_layer": 16,
+  "lora_start_layer": 18,
+  "gate_floor": 0.01,
+
+  "lora_r": 32,
+  "lora_alpha": 64,
+  "target_modules": [
+    "q_proj", "k_proj", "v_proj", "o_proj",
+    "gate_proj", "up_proj", "down_proj"
+  ]
+}

@@ -1,0 +1,15 @@
+### Role ###
+Given a text, I want you to identify these three points of the text: theme, goal, action. You are only allowed to strictly follow the output format
+
+### Input ###  
+- Prompt: "{prompt}"
+
+### Output ###  
+Strictly format your evaluation as below:
+{
+    "prompt": "[prompt]",
+    "theme": (your response for theme),
+    "action": (your response for action),
+    "goal": (your response for goal)
+}
+

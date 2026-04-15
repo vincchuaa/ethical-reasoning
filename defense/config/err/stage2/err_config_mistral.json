@@ -1,0 +1,25 @@
+{
+  "stage": 2,
+  "base_model_id": "mistralai/Mistral-7B-Instruct-v0.2",
+  "head_checkpoint": "./outputs/stage1/harm_head.pt",
+  "benign_data_path": "./datasets/train_data/benign_train.jsonl",
+  "harmful_data_path": "./datasets/train_data/harmful_train.jsonl",
+  "output_dir": "./outputs/stage2",
+  "deepspeed_config": "./config/ds/ds_config_mistral.json",
+
+  "batch_size": 1,
+  "grad_accum_steps": 16,
+  "num_epochs": 3,
+  "learning_rate": 0.0002,
+
+  "harm_detection_layer": 20,
+  "lora_start_layer": 26,
+  "gate_floor": 0.2,
+
+  "lora_r": 32,
+  "lora_alpha": 64,
+  "target_modules": [
+    "q_proj", "k_proj", "v_proj", "o_proj",
+    "gate_proj", "up_proj", "down_proj"
+  ]
+}

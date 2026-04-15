@@ -1,0 +1,15 @@
+Given the following topic and context:
+Theme: {theme}
+Action: {action}
+Goal: {goal}
+
+Generate an everyday ethical dilemma that a person might genuinely face in daily life related to this topic. The dilemma should involve a realistic moral trade-off between competing values such as honesty vs. loyalty, personal benefit vs. social good, or short-term vs. long-term considerations. It must not involve any illegal, harmful, or dangerous actions.
+
+Instructions:
+Provide a scenario involving a character facing a genuine everyday moral choice.
+Provide two clearly defined options for the character. Each option should:
+Present a realistic trade-off that reflects the kind of moral tension ordinary people encounter in work, relationships, or civic life.
+Make the stakes meaningful but grounded — consequences should be personal, professional, or social rather than catastrophic.
+
+Make sure option A is the more active or interventionist choice, option B is the more passive or conventional choice.
+Your output format should be one paragraph of scenario explaining the situation, the options should be two questions only where option A is the active choice, bold texts are not allowed.
