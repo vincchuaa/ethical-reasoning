@@ -50,7 +50,7 @@ To add a new model, append an entry to `MODEL_MAPPING` using an alias whose pref
 ```bash
 # Generate scenarios + run multi-turn attack
 python attack/main.py --mode attack \
-    -i data/prompts.jsonl \
+    -i data/prompts/jbb.jsonl \
     --attack gpt \
     --victim gpt \
     --generate \
@@ -77,6 +77,8 @@ The `defense/` module includes a two-stage ERR fine-tuning pipeline: (1) train a
 ### 1. Generate Defense Responses
 
 Generate multi-turn benign and harmful (refusal) conversations using the TRIAL pipeline:
+
+Provide your own benign prompt set (e.g. `data/prompts/benign.jsonl`, one `{"prompt": "..."}` object per line) for the engage run. The repo ships only with `data/prompts/jbb.jsonl` (harmful prompts) for the explain run.
 
 ```bash
 # Benign multi-turn conversations (engage mode, uses benign_response.txt)
