@@ -78,7 +78,7 @@ The `defense/` module includes a two-stage ERR fine-tuning pipeline: (1) train a
 
 Generate multi-turn benign and harmful (refusal) conversations using the TRIAL pipeline:
 
-Provide your own benign prompt set (e.g. `data/prompts/benign.jsonl`, one `{"prompt": "..."}` object per line) for the engage run. The repo ships only with `data/prompts/jbb.jsonl` (harmful prompts) for the explain run.
+Provide your own benign prompt set (e.g. `data/prompts/benign.jsonl`, one `{"prompt": "..."}` object per line) for the engage run. The repository currently only includes `data/prompts/jbb.jsonl` (harmful prompts) for the explain run.
 
 ```bash
 # Benign multi-turn conversations (engage mode, uses benign_response.txt)
