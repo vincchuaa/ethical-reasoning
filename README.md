@@ -10,9 +10,13 @@
 
 Official implementation of **TRIAL**, the multi-turn jailbreak red teaming framework using ethical dilemmas, and **ERR**, a two-stage defense via gated LoRA adapters, both presented in our paper *Between a Rock and a Hard Place: The Tension Between Ethical Reasoning and Safety Alignment in LLMs*.
 
+
+
 ## 📰 Updates
 
 - [ ] We plan to release the multi-turn *ENGAGE/EXPLAIN* alignment data soon.
+
+
 
 ## 🛠️ Setup
 
@@ -22,6 +26,8 @@ conda activate trolley
 pip install -r requirements.txt
 cp .env.example .env  # Fill in your API keys
 ```
+
+
 
 ## ⚙️ Model Configuration
 
@@ -42,6 +48,8 @@ We use [DeepInfra](https://deepinfra.com/) as our third-party API provider for o
 - otherwise → loaded locally via `transformers` with `device_map="auto"`
 
 To add a new model, append an entry to `MODEL_MAPPING` using an alias whose prefix matches the intended backend (e.g. `"d-kimi"` for DeepInfra; any alias without `gpt`/`claude`/`d-` loads locally).
+
+
 
 ## ⚡️ Usage
 
@@ -69,6 +77,8 @@ Output is saved to `data/conversations/{stem}_{attack}_vs_{victim}.jsonl`.
 - `--generate-only`: generate scenarios only, skip the conversation. Output is saved to `data/scenarios/{stem}_scenarios.jsonl` and can be fed back in as input without `--generate`.
 - `--scenario-type`: `utilitarian` (default), `deontological`, `care`, `virtue`
 - `--judge`: enable automatic jailbreak evaluation (requires `DEEPINFRA_API_KEY`)
+
+
 
 ## 🧪 ERR Defense
 
@@ -119,6 +129,7 @@ deepspeed --num_gpus=8 train.py --config config/err/stage2/err_config_llama.json
 ```
 
 Make sure to update the stage 1 and stage 2 config JSONs (under `defense/config/err/stage1/` and `defense/config/err/stage2/`) with your intended paths for `benign_data_path`, `harmful_data_path`, `output_dir`, and (for stage 2) `head_checkpoint` to point at your prepared data and desired output locations.
+
 
 
 ## ⚠️ Ethical Statement
