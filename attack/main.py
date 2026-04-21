@@ -1,41 +1,3 @@
-"""
-TRIAL Attack Pipeline — entry point.
-
-Modes:
-  attack   (default) Adversarial TRIAL attack against an undefended victim.
-                     Jailbreak judging is optionally enabled.
-                     Output: {"original_prompt", "clue", "scenario", "chat",
-                              "judged_rounds", "success"}
-
-  explain            TRIAL attack against a victim with the harmful_response.txt
-                     defense prompt (auto-applied). Generates harmful multi-turn
-                     training data for ERR.
-                     Output: {"messages": [...], "original_prompt": "..."}
-
-  engage             Ethical-discussion pipeline against a victim with the
-                     benign_response.txt defense prompt (auto-applied). Uses
-                     TRIAL for clue/scenario/init, then generate_followup for
-                     subsequent turns. Generates benign multi-turn training
-                     data for ERR.
-                     Output: {"messages": [...], "original_prompt": "..."}
-
-Defense prompts are resolved automatically from --mode:
-  explain → defense/prompts/harmful_response.txt
-  engage  → defense/prompts/benign_response.txt
-
-Usage:
-  # Attack mode
-  python attack/main.py --mode attack -i data/prompts/jbb.jsonl -o attack/response \\
-      --attack qwen --victim gpt --generate
-
-  # Explain mode (harmful training data)
-  python attack/main.py --mode explain -i data/prompts/jbb.jsonl -o attack/response \\
-      --attack qwen --victim hf-llama3.1-8b --generate --rounds 3
-
-  # Engage mode (benign training data)
-  python attack/main.py --mode engage -i data/prompts/benign.jsonl -o attack/response \\
-      --attack gpt --victim hf-llama3.1-8b --generate --rounds 3
-"""
 import argparse
 import shutil
 import sys
@@ -81,8 +43,6 @@ def main():
 
     args = parser.parse_args()
 
-    # Resolve defense prompt from mode — anchored to this file so it works
-    # regardless of CWD (repo root or cd'd into attack/).
     _REPO_ROOT = Path(__file__).resolve().parent.parent
     _DEFENSE_PROMPTS = {
         "explain": str(_REPO_ROOT / "defense" / "prompts" / "harmful_response.txt"),
@@ -98,13 +58,11 @@ def main():
     input_stem = Path(input_path).stem
     output_dir = Path(args.output_dir)
 
-    # Clean up stale failed/ directory from old workflow
     stale_failed_dir = output_dir / "failed"
     if stale_failed_dir.exists():
         print(f"Removing stale directory: {stale_failed_dir}")
         shutil.rmtree(stale_failed_dir)
 
-    # Determine output path based on mode
     if args.generate_only:
         scenario_dir = output_dir / "scenarios"
         scenario_dir.mkdir(parents=True, exist_ok=True)
@@ -119,7 +77,7 @@ def main():
         output_path = str(
             conv_dir / f"{input_stem}_{args.attack}_vs_{args.victim}_explain.jsonl"
         )
-    else:  # engage
+    else:
         conv_dir = output_dir / "conversations"
         conv_dir.mkdir(parents=True, exist_ok=True)
         output_path = str(
@@ -165,7 +123,7 @@ def main():
                 print(f"Failed to initialise judge: {e}", file=sys.stderr)
                 return 1
         runner = TrialRunner(config, jbb_judge=jbb_judge)
-    else:  # engage
+    else:
         runner = DefenseRunner(config)
 
     return runner.run_all(data)

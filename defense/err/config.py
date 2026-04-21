@@ -27,7 +27,6 @@ class ERRConfig:
     static_gate: bool = False
     head_dropout: float = 0.1
 
-    # --- Stage 2 (LoRA) ---
     learning_rate: Optional[float] = None
     head_checkpoint: Optional[str] = None
     lora_r: Optional[int] = None

@@ -10,10 +10,6 @@ class ERRTrainer(Trainer):
         self.err_config = err_config
 
     def create_optimizer(self):
-        # Stage 2 trains only LoRA weights (no biases, no norms), so HF's default
-        # decay/no-decay split produces an empty no-decay group. DeepSpeed drops
-        # the empty group during init, leaving scheduler.base_lrs out of sync
-        # with optimizer.param_groups (zip strict=True failure in torch 2.6+).
         optimizer = super().create_optimizer()
         optimizer.param_groups = [
             g for g in optimizer.param_groups if len(g["params"]) > 0

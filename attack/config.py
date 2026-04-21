@@ -1,4 +1,3 @@
-"""Attack pipeline configuration."""
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -50,7 +49,7 @@ class Config:
     generate_scenarios: bool = False
     generate_only: bool = False
     scenario_type: str = "utilitarian"
-    mode: str = "attack"  # "attack" | "explain" | "engage"
+    mode: str = "attack"
 
     num_prompts: Optional[int] = None
 
@@ -109,7 +108,6 @@ class Config:
         if not self.generate_only and (not self.attack_model or not self.victim_model):
             raise ValueError("Both --attack and --victim required unless --generate-only")
 
-        # Validate prompt files relevant to the current mode
         paths = self.prompt_paths
         if self.mode in ("attack", "explain"):
             for key in ("init_attack", "generate_attack", "extract_clue", "generate_scenario"):
@@ -118,7 +116,6 @@ class Config:
         if self.mode == "engage":
             if not paths["followup"].exists():
                 raise FileNotFoundError(f"Prompt file not found: {paths['followup']}")
-            # engage mode also uses TRIAL for clue/scenario/init
             for key in ("init_attack", "extract_clue", "generate_scenario"):
                 if not paths[key].exists():
                     raise FileNotFoundError(f"Prompt file not found: {paths[key]}")

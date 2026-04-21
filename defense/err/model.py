@@ -22,9 +22,6 @@ def print_trainable_parameters(model):
     )
 
 
-# =============================================================================
-# HARM-GATED LINEAR LAYER
-# =============================================================================
 class HarmGatedLinear(nn.Module):
     def __init__(
         self,
@@ -68,11 +65,6 @@ class HarmGatedLinear(nn.Module):
         return base_out
 
 
-# =============================================================================
-# HARM-GATED MODEL WRAPPER
-# =============================================================================
-
-# Known layer container names across architectures
 _LAYER_KEYWORDS = ("layers", "h", "block", "blocks")
 
 
@@ -115,7 +107,6 @@ class HarmGatedLlama(nn.Module):
         self.hidden_size = self.base_model.config.hidden_size
         print(f"Detected inner model: {type(self._inner_model).__name__}")
 
-        # Freeze base model immediately
         for param in self.base_model.parameters():
             param.requires_grad = False
 
@@ -362,7 +353,6 @@ class HarmGatedLlama(nn.Module):
 
     def forward(self, input_ids, attention_mask=None, labels=None, **kwargs):
         if self.err_config.static_gate:
-            # Static gate: skip harm score computation, set gate=1.0
             if self.gated_layers:
                 ones_gate = torch.ones(
                     input_ids.size(0), 1, 1,
@@ -378,10 +368,6 @@ class HarmGatedLlama(nn.Module):
                 return_dict=True,
             )
 
-            # NOTE: do not clear_gate() here. Gradient checkpointing reruns
-            # HarmGatedLinear.forward during backward; if gate is None at that
-            # point, LoRA is skipped in the recomputed graph and no grad flows.
-            # compute_harm_score() clears gates at the start of the next step.
 
             dummy = torch.zeros(input_ids.size(0), 1, device=input_ids.device)
             return {
@@ -390,7 +376,6 @@ class HarmGatedLlama(nn.Module):
                 "harm_logit": dummy,
             }
 
-        # Dynamic gate: compute harm score and use it to gate LoRA
         harm_logit, harm_score = self.compute_harm_score(
             input_ids, attention_mask, labels
         )
@@ -417,7 +402,6 @@ class HarmGatedLlama(nn.Module):
             return_dict=True,
         )
 
-        # NOTE: do not clear_gate() here. See static_gate path for rationale.
 
         return {
             "logits": outputs.logits,

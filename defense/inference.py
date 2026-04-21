@@ -32,9 +32,6 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, TextStreamer
 from err import ERRConfig, HarmGatedLlama, HarmGatedLinear, _get_inner_model, _get_layer_index
 
 
-# =============================================================================
-# INFERENCE MODEL WRAPPER (for generation with device_map="auto")
-# =============================================================================
 class HarmGatedLlamaForInference(nn.Module):
     """Loads a base model with harm-gated LoRA for inference with device_map='auto'."""
 
@@ -54,12 +51,11 @@ class HarmGatedLlamaForInference(nn.Module):
         self._inner_model = _get_inner_model(self.base_model)
         print(f"Detected inner model: {type(self._inner_model).__name__}")
 
-        # Must match training architecture (model.py) for correct weight loading
         self.harm_head = nn.Sequential(
             nn.LayerNorm(self.hidden_size),
             nn.Linear(self.hidden_size, 1024),
             nn.ReLU(),
-            nn.Dropout(0.0),  # No dropout at inference; keeps state_dict index alignment
+            nn.Dropout(0.0),
             nn.Linear(1024, 512),
             nn.ReLU(),
             nn.Dropout(0.0),
@@ -85,7 +81,7 @@ class HarmGatedLlamaForInference(nn.Module):
                         base_layer=child,
                         r=self.err_config.lora_r,
                         lora_alpha=self.err_config.lora_alpha,
-                        lora_dropout=0.0,  # No dropout for inference
+                        lora_dropout=0.0,
                         gate_floor=self.err_config.gate_floor,
                     )
                     gated.to(device=child.weight.device, dtype=child.weight.dtype)
@@ -96,20 +92,17 @@ class HarmGatedLlamaForInference(nn.Module):
         print(f"Loading ERR weights from {path}...")
         state_dict = torch.load(path, map_location="cpu", weights_only=True)
 
-        # Load harm head
         head_state = {
             k.replace("harm_head.", ""): v
             for k, v in state_dict.items()
             if k.startswith("harm_head.")
         }
         if not head_state:
-            # Might be a harm_head-only file (keys without prefix)
             head_state = state_dict
 
         self.harm_head.load_state_dict(head_state, strict=True)
         self.harm_head.to(self.base_model.device)
 
-        # Load LoRA weights
         lora_count = 0
         for full_name, module in self.base_model.named_modules():
             if isinstance(module, HarmGatedLinear):
@@ -134,7 +127,6 @@ class HarmGatedLlamaForInference(nn.Module):
                 idx = -1
             hidden_states = outputs.hidden_states[idx]
 
-            # Pool from last non-padding token (consistent with training)
             if attention_mask is None:
                 attention_mask = torch.ones_like(input_ids)
             seq_len = input_ids.shape[1]
@@ -197,9 +189,6 @@ class HarmGatedLlamaForInference(nn.Module):
         return tokenizer.decode(generated_ids[0], skip_special_tokens=True)
 
 
-# =============================================================================
-# MODE: DETECT (harm score only, no generation)
-# =============================================================================
 def run_detection(config: ERRConfig, weights_path: str, prompts: list):
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -207,7 +196,6 @@ def run_detection(config: ERRConfig, weights_path: str, prompts: list):
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
 
-    # Force stage=1 so no LoRA injection
     config.stage = 1
     model = HarmGatedLlama(config.base_model_id, config)
     model.load_err_weights(weights_path)
@@ -252,9 +240,6 @@ def run_detection(config: ERRConfig, weights_path: str, prompts: list):
     print(f"{'='*100}\n")
 
 
-# =============================================================================
-# MODE: GENERATE (full gated generation)
-# =============================================================================
 def run_generation(
     config: ERRConfig, weights_path: str, prompts: list, threshold: float = 0.5
 ):
@@ -273,9 +258,6 @@ def run_generation(
         model.generate(tokenizer, formatted, threshold=threshold)
 
 
-# =============================================================================
-# MAIN
-# =============================================================================
 def main():
     parser = argparse.ArgumentParser(description="ERR Model Inference")
     parser.add_argument(

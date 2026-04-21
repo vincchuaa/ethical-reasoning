@@ -32,8 +32,6 @@ MODEL_MAPPING = {
     "qwen": "Qwen/Qwen3-8B",
 }
 
-# ── HuggingFace direct loading ──────────────────────────────────────────────
-
 _hf_model_cache: dict = {}
 _hf_load_lock = threading.Lock()
 
@@ -44,12 +42,10 @@ def load_huggingface_model(model_path: str) -> dict:
     Thread-safe: concurrent workers will wait for the first loader to finish,
     then share the cached model.
     """
-    # Fast path: already cached
     if model_path in _hf_model_cache:
         return _hf_model_cache[model_path]
 
     with _hf_load_lock:
-        # Re-check inside the lock in case another thread just loaded it
         if model_path in _hf_model_cache:
             return _hf_model_cache[model_path]
 
@@ -118,8 +114,6 @@ def call_huggingface_model(
                 pad_token_id=tokenizer.eos_token_id,
             )
 
-        # original_prompt_len is set before prefix was appended, so
-        # decoding from that offset naturally includes the prefix text.
         response_text = tokenizer.decode(
             outputs[0][original_prompt_len:],
             skip_special_tokens=True,
@@ -129,9 +123,6 @@ def call_huggingface_model(
     except Exception as e:
         print(f"Error in call_huggingface_model for {model_path}: {e}")
         return f"ERROR: {str(e)}"
-
-
-# ── API model callers ───────────────────────────────────────────────────────
 
 
 def call_gpt(
@@ -200,7 +191,6 @@ def call_claude_model(
     try:
         client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
-        # Anthropic API requires separating system messages
         system_text = ""
         user_messages = []
         for msg in prompt:
@@ -231,9 +221,6 @@ def call_claude_model(
     except Exception as e:
         print(f"Error calling Claude model '{model}': {e}")
         return f"ERROR: {str(e)}"
-
-
-# ── Unified entry point ─────────────────────────────────────────────────────
 
 
 def call_model(
@@ -268,7 +255,6 @@ def call_model(
 
     full_model_name = MODEL_MAPPING[model_alias]
 
-    # Build messages list
     messages: MessageList = []
     if isinstance(prompt, str):
         if system_prompt:
@@ -281,7 +267,6 @@ def call_model(
     else:
         return "ERROR: Prompt must be a string or a list of messages."
 
-    # Route to the right backend
     if "gpt" in model_alias:
         return call_gpt(
             prompt=messages,
@@ -307,7 +292,6 @@ def call_model(
             force_prefix=force_prefix,
         )
     else:
-        # Default: load locally via HuggingFace transformers
         return call_huggingface_model(
             messages=messages,
             model_path=full_model_name,
