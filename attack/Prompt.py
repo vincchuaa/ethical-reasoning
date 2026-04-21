@@ -10,14 +10,11 @@ from config import Config, FRAMEWORK_INFO
 
 
 class BasePromptManager:
-    """Shared utilities used by all prompt manager subclasses."""
-
     def __init__(self, config: Config):
         self.config = config
         self._prompts: Dict[str, str] = {}
 
     def _load_prompts(self, keys: List[str]):
-        """Load only the named prompt files from config.prompt_paths."""
         paths = self.config.prompt_paths
         for key in keys:
             path = paths[key]
@@ -45,7 +42,6 @@ class BasePromptManager:
 
     @staticmethod
     def _parse_clue_fallback(text: str) -> dict:
-        """Regex fallback when json.loads fails on clue extraction output."""
         result = {}
         for f in ("prompt", "theme", "action", "goal"):
             m = re.search(

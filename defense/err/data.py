@@ -6,13 +6,6 @@ from datasets import load_dataset, concatenate_datasets
 
 
 def normalize_conversation_format(example: Dict) -> Dict:
-    """
-    Normalize different conversation formats to the standard messages format.
-
-    Supports:
-    1. Standard format: {"messages": [{"role": "...", "content": "..."}]}
-    2. Conversations format: {"conversations": [{"from": "human", "value": "..."}, ...]}
-    """
     if "messages" in example:
         messages = example.get("messages")
 

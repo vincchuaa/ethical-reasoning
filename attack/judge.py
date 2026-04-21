@@ -1,15 +1,3 @@
-"""
-Llama-3.1-70B jailbreak judge via DeepInfra.
-
-Drop-in replacement for jailbreakbench.classifier.Llama3JailbreakJudge.
-Delegates to api_call.call_deepinfra_model so all DeepInfra traffic in the
-repo goes through the same client setup.
-
-The classifier prompt and parsing logic are taken verbatim from JailbreakBench
-(https://github.com/JailbreakBench/jailbreakbench) so judgments remain
-comparable to published results.
-"""
-
 import os
 import sys
 from pathlib import Path

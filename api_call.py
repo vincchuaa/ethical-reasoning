@@ -37,11 +37,6 @@ _hf_load_lock = threading.Lock()
 
 
 def load_huggingface_model(model_path: str) -> dict:
-    """Load a HuggingFace model + tokenizer, with caching.
-
-    Thread-safe: concurrent workers will wait for the first loader to finish,
-    then share the cached model.
-    """
     if model_path in _hf_model_cache:
         return _hf_model_cache[model_path]
 
@@ -79,7 +74,6 @@ def call_huggingface_model(
     max_tokens: int = 4096,
     force_prefix: Optional[str] = None,
 ) -> str:
-    """Run inference on a local HuggingFace model."""
     try:
         cached = load_huggingface_model(model_path)
         model = cached["model"]
@@ -155,7 +149,6 @@ def call_deepinfra_model(
     max_tokens: int = 4096,
     force_prefix: Optional[str] = None,
 ) -> str:
-    """Call a model hosted on DeepInfra via its OpenAI-compatible endpoint."""
     if not DEEPINFRA_API_KEY:
         return "ERROR: DEEPINFRA_API_KEY environment variable not set."
     try:
@@ -231,21 +224,6 @@ def call_model(
     max_tokens: int = 4096,
     force_prefix: Optional[str] = None,
 ) -> str:
-    """
-    Call an LLM and return the response text.
-
-    Args:
-        model_alias: Key in MODEL_MAPPING (e.g. "gpt", "claude", "hf-llama3.1-8b").
-        prompt: Either a plain string or a list of {"role": ..., "content": ...} dicts.
-        system_prompt: Optional system message prepended to the conversation.
-        temperature: Sampling temperature.
-        max_tokens: Maximum tokens in the response.
-        force_prefix: If set, the model's response is forced to begin with this
-            string (assistant prefill). The returned text always includes the prefix.
-
-    Returns:
-        The assistant's response text.
-    """
     model_alias = model_alias.lower()
     if model_alias not in MODEL_MAPPING:
         raise ValueError(

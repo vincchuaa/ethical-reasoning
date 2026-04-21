@@ -1,17 +1,3 @@
-"""
-Prepare ERR Training Data from multi-turn TRIAL pipeline outputs.
-
-Input files are JSONL produced by attack/main.py (engage or explain mode),
-each line containing a {"messages": [...], "original_prompt": "..."} entry.
-
-The trainer (defense/err/data.py) handles the train/val split internally (90/10).
-
-Usage:
-    python defense/scripts/prepare_err_data.py \
-        --benign_responses  data/conversations/benign_d-ds_vs_hf-llama_engage.jsonl \
-        --harmful_responses data/conversations/jbb_d-ds_vs_hf-llama_explain.jsonl \
-        --output_dir        defense/datasets/train_data
-"""
 import argparse
 import json
 import os
