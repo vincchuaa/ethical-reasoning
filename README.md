@@ -141,10 +141,11 @@ This repository is released for **academic research purposes only**. The attack 
 If you find this work useful for your research, please consider citing our paper:
 
 ```bibtex
-@article{chua2025between,
+@inproceedings{chua2026between,
   title={Between a Rock and a Hard Place: The Tension Between Ethical Reasoning and Safety Alignment in LLMs},
   author={Chua, Shei Pern and Thai, Zhen Leng and Teh, Kai Jun and Li, Xiao and Ren, Qibing and Hu, Xiaolin},
-  journal={arXiv preprint arXiv:2509.05367},
-  year={2025}
+  booktitle={Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  pages={4275--4310},
+  year={2026}
 }
 ```
